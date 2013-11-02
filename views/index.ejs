@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+  </head>
+  <body>
+
+  <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+          <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="#"><%= title %></a>
+          </div>
+      </div>
+  </div>
+
+  <div class="container">
+
+      <div class="row">
+          <div>
+              <form id="imageForm" role="form" method="post" action="/" enctype="multipart/form-data" class="form-horizontal">
+                  <div class="form-group">
+                      <label for="image" class="col-lg-1">Image</label>
+                      <div class="col-lg-8">
+                          <input type="file" class="form-control" id="image" name="image" placeholder="Select an Image">
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="resizeWidth" class="col-lg-1">Width</label>
+                      <div class="col-lg-2">
+                        <input type="text" id="resizeWidth" name="resizeWidth" value="<%= resize.width || "" %>">
+                        <span class="help-block"><a href="http://www.graphicsmagick.org/GraphicsMagick.html#details-resize" target="_blank">Further Info</a></span>
+                      </div>
+                      <label for="resizeHeight" class="col-lg-1">Height</label>
+                      <div class="col-lg-2">
+                        <input type="text" id="resizeHeight" name="resizeHeight"  value="<%= resize.height || "" %>">
+                      </div>
+                      <div class="checkbox col-lg-2">
+                          <label>
+                              <input type="checkbox" id="resizeForce" name="resizeForce" <%= resize.force %>>
+                              force to width and height
+                          </label>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="colorspace" class="col-lg-1">Colorspace</label>
+                      <div class="col-lg-8">
+                          <select id="colorspace" name="colorspace" class="form-control">
+                              <% for(var i=0; i<options.colorspace.length; i++) {
+                                  var option = options.colorspace[i];
+                                  var selected = option == colorspace ? "selected" : "";
+                              %>
+                              <option value="<%= option%>" <%= selected%>><%= option%></option>
+                              <% } %>
+                          </select>
+                          <span class="help-block"><a href="http://www.graphicsmagick.org/GraphicsMagick.html#details-colorspace" target="_blank">Further Info</a></span>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="quality" class="col-lg-1">Quality</label>
+                      <div class="col-lg-8">
+                          <input type="text" class="form-control" id="quality" name="quality" placeholder="0-100" value="<%= quality  || "" %>">
+                          <span class="help-block"><a href="http://www.graphicsmagick.org/GraphicsMagick.html#details-quality" target="_blank">Further Info</a></span>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="contrast" class="col-lg-1">Contrast</label>
+                      <div class="col-lg-8">
+                          <input type="text" class="form-control" id="contrast" name="contrast" placeholder="+-Value eg: +3 or -3" value="<%= contrast  || "" %>">
+                          <span class="help-block"><a href="http://www.graphicsmagick.org/GraphicsMagick.html#details-contrast" target="_blank">Further Info</a></span>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="filter" class="col-lg-1">Filter</label>
+                      <div class="col-lg-8">
+                          <select id="filter" name="filter" class="form-control">
+                              <% for(var i=0; i<options.filter.length; i++) {
+                                  var option = options.filter[i];
+                                  var selected = option == filter ? "selected" : "";
+                              %>
+                              <option value="<%= option%>" <%= selected%>><%= option%></option>
+                              <% } %>
+                          </select>
+                          <span class="help-block"><a href="http://www.graphicsmagick.org/GraphicsMagick.html#details-filter" target="_blank">Further Info</a></span>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="sharpenRadius" class="col-lg-2">Sharpen: Radius</label>
+                      <div class="col-lg-8">
+                          <input type="text" id="sharpenRadius" name="sharpenRadius" value="<%= sharpen.radius  || ""%>">
+                          <label for="sharpenSigma">Sigma</label>
+                          <input type="text" id="sharpenSigma" name="sharpenSigma" value="<%= sharpen.sigma || ""%>">
+                          <span class="help-block"><a href="http://www.graphicsmagick.org/GraphicsMagick.html#details-sharpen" target="_blank">Further Info</a></span>
+                      </div>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                  <%if(originalImage){%>
+                  <input type="hidden" id="originalImage" name="originalImage" value="<%= originalImage.imageName %>" />
+                  <%}%>
+              </form>
+              <a id="formToggle">Toggle Form</a>
+          </div>
+
+      </div>
+      <%if(originalImage){
+        var originalDisplayDimensions = "";
+        if(resize.width){
+            originalDisplayDimensions += "width=" + resize.width;
+        }
+          if(resize.height){
+              originalDisplayDimensions += "height=" + resize.height;
+          }
+      %>
+      <div>
+          <div id="originalImageContainer">
+              <h2>Original Image</h2>
+              <img src="/images/compare/<%= originalImage.imageName%>" alt="Original Image" <%= originalDisplayDimensions%> />
+              <span>Size: <%= originalImage.size%></span>
+          </div>
+          <div id="resizedImageContainer">
+              <h2>Resized Image</h2>
+              <img src="/images/compare/<%= resizedImage.imageName%>" alt="Resized Image" />
+              <span>Size: <%= resizedImage.size%></span>
+          </div>
+      </div>
+      <%}%>
+  </div><!-- /.container -->
+
+
+  <!-- Bootstrap core JavaScript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+  <script>
+      $(document).ready(function(){
+         $("#formToggle").click(function(){
+             $("#imageForm").toggle();
+         });
+      });
+  </script>
+  </body>
+</html>

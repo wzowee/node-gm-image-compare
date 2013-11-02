@@ -10,6 +10,11 @@ lib-cov
 pids
 logs
 results
+_images/upload
+public/images/compare
 
 npm-debug.log
 node_modules
+
+*/.idea/workspace.xml 
+*/.idea/tasks.xml
